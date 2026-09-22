@@ -7,10 +7,10 @@ def load_data():
 	return data
 @app.get("/")
 def hello():
-	return {'message':'Hello world'}
+	return {'message':'Patient management system api'}
 @app.get("/about")
 def about():
-	return {'message': 'campusx is an education platform where you can learn AIN'}
+	return {'message': 'A fully functional API to manage your patients record'}
 @app.get("/view")
 def view():
 	data = load_data()
