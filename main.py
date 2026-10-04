@@ -33,7 +33,8 @@ def view_patient(patient_id: str = Path(..., description = "ID of the patient in
 	raise HTTPException(status_code = 404, detail = 'patient not found')
 
 @app.get('/sort')
-def sort_patients(sort_by: str = Query(..., description = "sort on the basis of weight, height or bmi"), order: str = Query('asc', description = "sort in ascending or descending order") ):
+def sort_patients(sort_by: str = Query(..., description = "sort on the basis of weight, height or bmi"), 
+order: str = Query('asc', description = "sort in ascending or descending order")):
 	if sort_by not in ["weight", "height", "bmi"]:
 		raise HTTPException(status_code = 400, detail = "Invalid field, selct from height, weight, bmi")
 	if order not in ['asc', 'desc']:
