@@ -29,17 +29,16 @@ class Patient(BaseModel):
 			return "Obese"
 
 
-
-
-	
-
-
 app = FastAPI()
 
 def load_data():
-	with open('package.json', 'r') as f:
+	with open('patients.json', 'r') as f:
 		data = json.load(f)
 	return data
+
+def save_data(data):
+	with open("patients.json", "w") as file:
+		json.dump(data, file)
 
 
 @app.get("/")
@@ -59,11 +58,13 @@ def view():
 
 
 @app.get('/patient/{patient_id}')
+
 def view_patient(patient_id: str = Path(..., description = "ID of the patient in the DATABASE", example = "P001") ):
 	data = load_data()
 	if patient_id in data:
 		return data[patient_id]
 	raise HTTPException(status_code = 404, detail = 'patient not found')
+
 
 @app.get('/sort')
 
