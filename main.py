@@ -1,5 +1,38 @@
 from fastapi import FastAPI, Path, HTTPException, Query
+from pydantic import BaseModel, Field, field_validator, computed_field
+from typing import Annotated, Optional, Literal, Dict, List
 import json
+
+class Patient(BaseModel):
+
+	id: Annotated[str, Field(..., description= "Id of the patient", title= "Patient Id", examples= ["P001, P002"])]
+	name: Annotated[str, Field(..., description= "name of the patient", title= "Patient Name", examples= ["charan", "Madhu"])]
+	city: Annotated[str, Field(..., description= "Name of the city", title= "City Name", examples= ["tirupati", "kadapa"])]
+	age: Annotated[str,Field(..., description= "Age of patient", title= "Patient Age", examples= [10, 19])]
+	gender: Annotated[Literal["male, female, others"], Field(..., description= "Gender of the patient", title= "Patient Gender")]
+	height: Annotated[float, Field(..., description= "Height of patient in metres", title= "Patient Height", examples= [1.75, 1.55])]
+
+	@computed_field
+	@property
+	def bmi(self) -> float:
+		bmi = round(self.weight/(self.height**2), 2)
+		return bmi
+
+	@computed_field
+	@property
+	def verdict(self) -> str:
+		if self.bmi < 18.5:
+			return "under weight"
+		elif 18.5 < self.bmi < 30:
+			return "Normal" 
+		else:
+			return "Obese"
+
+
+
+
+	
+
 
 app = FastAPI()
 
@@ -33,8 +66,10 @@ def view_patient(patient_id: str = Path(..., description = "ID of the patient in
 	raise HTTPException(status_code = 404, detail = 'patient not found')
 
 @app.get('/sort')
+
 def sort_patients(sort_by: str = Query(..., description = "sort on the basis of weight, height or bmi"), 
 order: str = Query('asc', description = "sort in ascending or descending order")):
+	
 	if sort_by not in ["weight", "height", "bmi"]:
 		raise HTTPException(status_code = 400, detail = "Invalid field, selct from height, weight, bmi")
 	if order not in ['asc', 'desc']:
@@ -43,6 +78,7 @@ order: str = Query('asc', description = "sort in ascending or descending order")
 	sort_order = True if order == "desc" else False
 	sorted_data = sorted(data.values(), key = lambda x: x.get(sort_by, 0), reverse = sort_order)
 	return sorted_data
+
 
 
 
