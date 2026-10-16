@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Path, HTTPException, Query
+from fastapi import FastAPI, Path, Query, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator, computed_field
 from typing import Annotated, Optional, Literal, Dict, List
 import json
@@ -79,6 +80,22 @@ order: str = Query('asc', description = "sort in ascending or descending order")
 	sort_order = True if order == "desc" else False
 	sorted_data = sorted(data.values(), key = lambda x: x.get(sort_by, 0), reverse = sort_order)
 	return sorted_data
+
+
+@app.post('/create')
+
+def create_patient(patient: Patient):
+
+	data = load_data()
+
+	if patient.id not in data:
+		raise HTTPException(status_code= 400, detail= "Patient already exists")
+
+	data[patient.id] = patient.model_dump(exclude = ["id"])
+
+	save_data(data)
+
+	return JSONResponse(status_code= 200, content= {"message": "patient added successfully"})
 
 
 
