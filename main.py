@@ -12,6 +12,7 @@ class Patient(BaseModel):
 	age: Annotated[str,Field(..., description= "Age of patient", title= "Patient Age", examples= [10, 19])]
 	gender: Annotated[Literal["male, female, others"], Field(..., description= "Gender of the patient", title= "Patient Gender")]
 	height: Annotated[float, Field(..., description= "Height of patient in metres", title= "Patient Height", examples= [1.75, 1.55])]
+	weight: Annotated[float, Field(..., description= "Weight of patient in kgs", title= "Patient weight", examples= [90.00, 21.22])]
 
 	@computed_field
 	@property
