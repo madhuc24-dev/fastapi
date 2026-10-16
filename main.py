@@ -9,8 +9,8 @@ class Patient(BaseModel):
 	id: Annotated[str, Field(..., description= "Id of the patient", title= "Patient Id", examples= ["P001, P002"])]
 	name: Annotated[str, Field(..., description= "name of the patient", title= "Patient Name", examples= ["charan", "Madhu"])]
 	city: Annotated[str, Field(..., description= "Name of the city", title= "City Name", examples= ["tirupati", "kadapa"])]
-	age: Annotated[str,Field(..., description= "Age of patient", title= "Patient Age", examples= [10, 19])]
-	gender: Annotated[Literal["male, female, others"], Field(..., description= "Gender of the patient", title= "Patient Gender")]
+	age: Annotated[int,Field(..., description= "Age of patient", title= "Patient Age", examples= [10, 19])]
+	gender: Annotated[Literal["male", "female", "others"], Field(..., description= "Gender of the patient", title= "Patient Gender")]
 	height: Annotated[float, Field(..., description= "Height of patient in metres", title= "Patient Height", examples= [1.75, 1.55])]
 	weight: Annotated[float, Field(..., description= "Weight of patient in kgs", title= "Patient weight", examples= [90.00, 21.22])]
 
@@ -61,7 +61,7 @@ def view():
 
 @app.get('/patient/{patient_id}')
 
-def view_patient(patient_id: str = Path(..., description = "ID of the patient in the DATABASE", example = "P001") ):
+def view_patient(patient_id: str = Path(..., description = "ID of the patient in the DATABASE", examples= "P001") ):
 	data = load_data()
 	if patient_id in data:
 		return data[patient_id]
@@ -89,7 +89,7 @@ def create_patient(patient: Patient):
 
 	data = load_data()
 
-	if patient.id not in data:
+	if patient.id in data:
 		raise HTTPException(status_code= 400, detail= "Patient already exists")
 
 	data[patient.id] = patient.model_dump(exclude = ["id"])
