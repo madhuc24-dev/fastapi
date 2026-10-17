@@ -31,13 +31,13 @@ class Patient(BaseModel):
 			return "Obese"
 
 
-class Patient_updated(BaseModel):
+class PatientUpdate(BaseModel):
 	name: Annotated[Optional[str], Field(default= None)]
 	city: Annotated[Optional[str], Field(default= None)]
-	age: Annotated[Optional[int],Field(default= None)]
+	age: Annotated[Optional[int],Field(default= None, gt= 0)]
 	gender: Annotated[Optional[Literal["male", "female", "others"]], Field(default= None)]
-	height: Annotated[Optional[float], Field(default= None)]
-	weight: Annotated[Optional[float], Field(default= None)]
+	height: Annotated[Optional[float], Field(default= None, gt= 0)]
+	weight: Annotated[Optional[float], Field(default= None, gt= 0)]
 
 
 
@@ -106,12 +106,9 @@ def create_patient(patient: Patient):
 
 	save_data(data)
 
-	return JSONResponse(status_code= 200, content= {"message": "patient added successfully"})
-
-
+	
 @app.put('/edit/{patient_id}')
-
-def edit(patient_id: str, patient: Patient_updated):
+def update_patient(patient_id: str, patient1: PatientUpdate):
 
 	data = load_data()
 
@@ -119,13 +116,13 @@ def edit(patient_id: str, patient: Patient_updated):
 		raise HTTPException(status_code= 404, detail= "Patient not found")
 	
 	existing_patient_data = data[patient_id]
-	updated_patient_data = patient.model_dump(exclude_unset= True)
+	updated_patient_data = patient1.model_dump(exclude_unset= True)
 
 	for key, value in updated_patient_data.items():
 		existing_patient_data[key] = value
 
 	existing_patient_data["id"] = patient_id
-	patient_updated_object = patient(**existing_patient_data)
+	patient_updated_object = Patient(**existing_patient_data)
 
 	data[patient_id] = patient_updated_object.model_dump(exclude= ["id"])
 
