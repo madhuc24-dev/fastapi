@@ -71,7 +71,7 @@ def view():
 
 @app.get('/patient/{patient_id}')
 
-def view_patient(patient_id: str = Path(..., description = "ID of the patient in the DATABASE", examples= "P001") ):
+def view_patient(patient_id: str = Path(..., description = "ID of the patient in the DATABASE", examples= ["P001", "P002"]) ):
 	data = load_data()
 	if patient_id in data:
 		return data[patient_id]
@@ -102,9 +102,11 @@ def create_patient(patient: Patient):
 	if patient.id in data:
 		raise HTTPException(status_code= 400, detail= "Patient already exists")
 
-	data[patient.id] = patient.model_dump(exclude = ["id"])
+	data[patient.id] = patient.model_dump(exclude = {"id"})
 
 	save_data(data)
+
+	return JSONResponse(status_code= 200, content= {'message': "patient added successfully"})
 
 	
 @app.put('/edit/{patient_id}')
@@ -124,7 +126,7 @@ def update_patient(patient_id: str, patient1: PatientUpdate):
 	existing_patient_data["id"] = patient_id
 	patient_updated_object = Patient(**existing_patient_data)
 
-	data[patient_id] = patient_updated_object.model_dump(exclude= ["id"])
+	data[patient_id] = patient_updated_object.model_dump(exclude= {"id"})
 
 	save_data(data)
 
